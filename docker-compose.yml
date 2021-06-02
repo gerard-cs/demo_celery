@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    depends_on:
+      - mariadb
+      - broker
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/usr/src/app
+  mariadb:
+    build:
+      context: ./mariadb
+      dockerfile: Dockerfile
+    container_name: celerydb
+    environment:
+      MYSQL_ROOT_PASSWORD: osmos
+    ports: 
+      - 127.0.0.1:3311:3306
+    volumes:
+      - "mariadb:/var/lib/mysql"
+  broker:
+    image: rabbitmq:3.8-management-alpine
+    container_name: broker
+    ports:
+      - 15676:15672
+volumes:
+  mariadb:
